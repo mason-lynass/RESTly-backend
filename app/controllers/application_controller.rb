@@ -7,29 +7,32 @@ class ApplicationController < Sinatra::Base
     restaurants.to_json(include: [:reviews, :favorites])
   end
 
-  # #GET Request for a specific restaurant, its reviews, and its favorites
-  # get "/restaurants/:id" do
-  #   restaurant = Restaurant.find(params[:id])
-  #   restaurant.to_json(include: [:reviews, :favorites])
-  # end
-
-  #DELETE Request for a review
-  delete '/delete/:id' do
-    review = Review.find(params[:id])
-    review.destroy
-    review.to_json
+  #GET Request for a specific restaurant, its reviews, and its favorites
+  get "/restaurants/:id" do
+    restaurant = Restaurant.find(params[:id])
+    restaurant.to_json(include: [:reviews, :favorites])
   end
 
-
-  #POST Request for a new item
+  
+  #POST Request for a new favorite
   post '/favorites' do
     favorite = Favorite.create(
       food_name: params[:food_name],
       likes: params[:likes],
-      restaurant: params[:restaurant]
+      restaurant_id: params[:restaurant_id]
     )
   end
 
+  #PATCH Request for adding likes to a favorite
+  patch '/favorites/:id' do
+    favorite = Favorite.find(params[:id])
+    favorite.update(
+      likes: params[:likes],
+    )
+  end
+  
+      
+  #POST request for a new review
   post '/review' do
     review = Review.create(
       username: params[:username],
@@ -40,15 +43,23 @@ class ApplicationController < Sinatra::Base
     )
   end
 
-
-
   #PATCH Request for a review
   patch '/patch/:id' do
     review = Review.find(params[:id])
     review.update(
       date: params[:date],
       username: params[:username]
+
     )
     review.to_json
   end
+  
+  #DELETE Request for a review
+  delete '/delete/:id' do
+    review = Review.find(params[:id])
+    review.destroy
+    review.to_json
+  end
+
+  
 end
